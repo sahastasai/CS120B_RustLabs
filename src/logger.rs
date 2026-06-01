@@ -39,6 +39,24 @@ fn write_u32(mut n: u32) {
     }
 }
 
+pub fn log_step_period(period_ms: u32) {
+    send_bytes(b"step_period=");
+    write_u32(period_ms);
+    send_bytes(b" ms/phase\n");
+}
+
+pub fn log_idle(ms: u32) {
+    send_bytes(b"idle=");
+    write_u32(ms);
+    send_bytes(b" ms\n");
+}
+
+pub fn log_idle_alert(ms: u32) {
+    send_bytes(b"idle=");
+    write_u32(ms);
+    send_bytes(b" ms ALERT\n");
+}
+
 pub fn log_led_selection(color: &[u8], brightness: u32, dist_cm: u32) {
     send_bytes(b"LED:");
     send_bytes(color);

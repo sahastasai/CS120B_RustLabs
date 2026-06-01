@@ -7,9 +7,9 @@ license = "MIT OR Apache-2.0"
 
 [features]
 default = ["part1"]
-part1 = []
-part2 = ["part1"]
-part3 = ["part2"]
+part1 = []          # Exercise 1: joystick → stepper direction + servo + 6 LEDs
+part2 = ["part1"]   # Exercise 2: + buttons for stepper speed control
+part3 = ["part2"]   # Exercise 3: + passive buzzer alerts
 [[bin]]
 name = "lab5"
 test = false

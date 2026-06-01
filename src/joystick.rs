@@ -18,7 +18,7 @@ fn adc_read(channel: u8) -> u16 {
     dp.ADC.adcsra.write(|w| unsafe { w.bits(0xC7) });
     // Wait for ADSC to clear (conversion complete)
     while dp.ADC.adcsra.read().bits() & 0x40 != 0 {}
-    // Read 10-bit result (ADCL must be read first — avr-device combined read handles this)
+    // Read 10-bit result (ADCL must be read first: avr-device combined read handles this)
     dp.ADC.adc.read().bits()
 }
 
@@ -43,4 +43,25 @@ pub fn read_dir() -> JoystickDir {
 /// SW on A2 (PC2), active LOW with pull-up.
 pub fn read_pressed() -> bool {
     dp().PORTC.pinc.read().bits() & 0x04 == 0
+}
+
+/// Y-axis raw ADC (VRy, A3) 0–1023.
+pub fn read_vry() -> u16 {
+    adc_read(3)
+}
+
+/// Map a raw VRy reading to a direction: Up(<300), Down(>700), else Center.
+pub fn dir_from_vry(vry: u16) -> JoystickDir {
+    if vry < 300 {
+        JoystickDir::Up
+    } else if vry > 700 {
+        JoystickDir::Down
+    } else {
+        JoystickDir::Center
+    }
+}
+
+/// X-axis raw ADC (VRx, A2) 0–1023 for servo positioning.
+pub fn read_vrx() -> u16 {
+    adc_read(2)
 }

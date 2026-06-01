@@ -31,10 +31,16 @@ pub enum CalibratorState {
     Active(Calibrator),
 }
 
-// Lab-6 part-2 states
+// Lab6 part2 states
 pub enum JoystickTaskState { Start, Active }
 pub enum LCDTaskState      { Start, Active }
 pub enum StepperTaskState  { Start, Active }
+
+// Lab7 states
+pub enum StepperLedState  { Start, Active }
+pub enum ServoLedState    { Start, Active }
+pub enum ButtonSpeedState { Start, Active }
+pub enum IdleBuzzerState  { Start, Active }
 
 pub enum State {
     Sonar(SonarState),
@@ -47,6 +53,10 @@ pub enum State {
     Joystick(JoystickTaskState),
     LCDDisplay(LCDTaskState),
     StepperCtrl(StepperTaskState),
+    StepperLed(StepperLedState),
+    ServoLed(ServoLedState),
+    ButtonSpeed(ButtonSpeedState),
+    IdleBuzzer(IdleBuzzerState),
 }
 
 pub struct Task {

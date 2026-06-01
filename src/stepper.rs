@@ -1,6 +1,5 @@
 use crate::dp;
 
-// These are the steps denoted with what pin(s) on the stepper they activate.
 const STEPS: [u8; 8] = [
     0x20, // 1000 — IN1
     0x30, // 1100 — IN1+IN2
@@ -12,14 +11,15 @@ const STEPS: [u8; 8] = [
     0x24, // 1001 — IN4+IN1
 ];
 
-// Mask covering the four stepper pins
 const STEPPER_MASK: u8 = 0x3C;
 
-const MAX_STEPS: i32 = 1024; // In Rust, with my step size, the amount of half steps ended up being
-                             // 8 times higher than the script provided!
-
 static mut STEP_IDX: u8 = 0;
-pub(crate) static mut STEPPER_POS: i32 = 0;
+
+// Period label in C-reference ms/phase; task scales 8x via accumulator.
+pub(crate) const STEP_PERIOD_MIN: u32 = 5;
+pub(crate) const STEP_PERIOD_MAX: u32 = 30;
+pub(crate) const STEP_PERIOD_DELTA: u32 = 5;
+pub(crate) static mut STEP_PERIOD: u32 = 15;
 
 fn apply_step() {
     let pattern = unsafe { STEPS[STEP_IDX as usize] };
@@ -29,34 +29,13 @@ fn apply_step() {
 }
 
 pub fn step_ccw() {
-    unsafe {
-        #[cfg(feature = "part3")]
-        if STEPPER_POS >= MAX_STEPS { return; }
-        STEP_IDX = (STEP_IDX + 1) % 8;
-        #[cfg(feature = "part3")]
-        { STEPPER_POS += 1; }
-    }
+    unsafe { STEP_IDX = (STEP_IDX + 1) % 8; }
     apply_step();
 }
 
 pub fn step_cw() {
-    unsafe {
-        #[cfg(feature = "part3")]
-        if STEPPER_POS <= -MAX_STEPS { return; }
-        STEP_IDX = (STEP_IDX + 7) % 8; // +7 mod 8 == -1 mod 8
-        #[cfg(feature = "part3")]
-        { STEPPER_POS -= 1; }
-    }
+    unsafe { STEP_IDX = (STEP_IDX + 7) % 8; } // +7 mod 8 == -1 mod 8
     apply_step();
-}
-
-/// Reset position to zero 
-pub fn reset_position() {
-    unsafe { STEPPER_POS = 0; }
-}
-
-pub fn is_halted() -> bool {
-    unsafe { STEPPER_POS >= MAX_STEPS || STEPPER_POS <= -MAX_STEPS }
 }
 
 pub fn stop() {
